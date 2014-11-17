@@ -1,0 +1,69 @@
+{
+    "module": "caf_ca#ca",
+    "name" : "ca",
+    "description": "A generic Cloud Assistant\n Properties:\n ",
+    "env": {
+                "maxRetries" : "process.env.maxRetries||10",
+                "retryDelay" : "process.env.retryDelay||1000",
+                "stateVersion": "process.env.stateVersion||0.1.0",
+    },
+    "components" : [
+        {
+            "module": "caf_session#plug_ca",
+            "name": "session",
+            "description": "Manages sessions with clients\n Properties:\n <backChannelTimeout> Max seconds to reset the backchannel.\n",
+            "env" : {
+                "maxRetries" : "$._.env.maxRetries",
+                "retryDelay" : "$._.env.retryDelay",
+                "backChannelTimeout" : 8
+            },
+            "components" : [
+                {
+                    "module": "caf_session#proxy",
+                    "name": "proxy",
+                    "description": "Provides information of the session of this incoming request",
+                    "env" : {
+                    }
+                }
+            ]
+        },
+        {
+            "module": "caf_ca#plug_ca_inqueue",
+            "name": "inq",
+            "description": "Manages a shared queue for incoming requests",
+            "env" : {
+                "maxRetries" : "$._.env.maxRetries",
+                "retryDelay" : "$._.env.retryDelay"
+            },
+            "components" : [
+                {
+                    "module": "caf_ca#proxy_inqueue",
+                    "name": "proxy",
+                    "description": "Allows access to this CA  input queue",
+                    "env" : {
+                    }
+                }
+            ]
+        },
+        {
+            "module": "caf_ca#plug_ca_handler",
+            "name": "handler",
+            "description": "Handler object with all the app methods.",
+            "env" : {
+                "maxRetries" : "$._.env.maxRetries",
+                "retryDelay" : "$._.env.retryDelay",
+                "methodsFileName" : "./ca_methods.js"
+            },
+            "components" : [
+                {
+                    "module": "caf_ca#proxy_handler",
+                    "name": "props",
+                    "description": "Exposes read-only properties to app methods",
+                    "env" : {
+                        "stateVersion" : "$._.env.stateVersion"
+                    }
+                }
+            ]
+        }
+    ]
+}
