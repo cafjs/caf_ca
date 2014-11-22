@@ -27,10 +27,24 @@ exports.methods = {
     },
     helloException: function(msg, cb) {
         this.state.lastMsg = msg;
-        var err = new Error('Something really bad happened');
-        throw err;
+        var f = function() {
+            var err = new Error('Something really bad happened');
+            throw err;
+        };
+        f();
+    },
+    helloDelayException: function(msg, cb) {
+        this.state.lastMsg = msg;
+        var f = function() {
+            var err = new Error('Something really bad happened');
+            throw err;
+        };
+        setTimeout(f, 100);
     },
     getLastMessage: function(cb) {
         cb(null, this.state.lastMsg);
+    },
+    getQueueLength: function(cb) {
+        cb(null, this.$.inq.queueLength());
     }
 };

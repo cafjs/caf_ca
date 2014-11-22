@@ -4,7 +4,8 @@ var json_rpc = require('caf_transport');
 var hello = require('./hello/main.js');
 
 exports.helloworld = function (test) {
-    test.expect(7);
+    test.expect(25);
+    var ca1;
     hello.load(null, {name: 'ca1'}, 'ca.json', null, function(err, $) {
                    test.ifError(err);
                    test.equal(typeof($.ca1), 'object',
@@ -32,7 +33,154 @@ exports.helloworld = function (test) {
                                                            'hi');
 
                                         $.ca1.__ca_process__(msg, cb1);
-                                    }
+                                    },
+                                    function(cb) {
+                                        var cb1 = function(err, data) {
+                                            test.ifError(err);
+                                            var resp =
+                                                json_rpc.getAppReplyError(data);
+                                            console.log(JSON.stringify(resp));
+                                            test.ok(resp.stack);
+                                            cb(null);
+                                        };
+                                        var msg = json_rpc
+                                            .systemRequest('ca1', 'helloFail' ,
+                                                           'ignore');
+
+                                        $.ca1.__ca_process__(msg, cb1);
+                                    },
+                                    // no state change
+                                    function(cb) {
+                                        var cb1 = function(err, data) {
+                                            test.ifError(err);
+                                            var resp =
+                                                json_rpc.getAppReplyData(data);
+                                            test.equals(resp, 'hi');
+                                            cb(null);
+                                        };
+                                        var msg = json_rpc
+                                           .systemRequest('ca1',
+                                                          'getLastMessage');
+
+                                       $.ca1.__ca_process__(msg, cb1);
+                                    },
+                                    // exception thrown
+                                    function(cb) {
+                                        var cb1 = function(err, data) {
+                                            test.ifError(err);
+                                            var resp =
+                                                json_rpc
+                                                .getSystemErrorCode(data);
+                                            console.log(JSON.stringify(resp));
+                                            test.equals(resp,
+                                                        json_rpc.ERROR_CODES.
+                                                        exceptionThrown);
+                                            cb(null);
+                                        };
+                                        var msg = json_rpc
+                                            .systemRequest('ca1',
+                                                           'helloException' ,
+                                                           'ignore');
+
+                                        $.ca1.__ca_process__(msg, cb1);
+                                    },
+                                    // no state change
+                                    function(cb) {
+                                        var cb1 = function(err, data) {
+                                            test.ifError(err);
+                                            var resp =
+                                                json_rpc.getAppReplyData(data);
+                                            test.equals(resp, 'hi');
+                                            cb(null);
+                                        };
+                                        var msg = json_rpc
+                                           .systemRequest('ca1',
+                                                          'getLastMessage');
+
+                                       $.ca1.__ca_process__(msg, cb1);
+                                    },
+                                    // exception thrown background
+                                    function(cb) {
+                                        var cb1 = function(err, data) {
+                                            test.ifError(err);
+                                            var resp =
+                                                json_rpc
+                                                .getSystemErrorCode(data);
+                                            console.log(JSON.stringify(resp));
+                                            test.equals(resp,
+                                                        json_rpc.ERROR_CODES.
+                                                        exceptionThrown);
+                                            cb(null);
+                                        };
+                                        var msg = json_rpc
+                                            .systemRequest('ca1',
+                                                           'helloDelayException' ,
+                                                           'ignore');
+
+                                        $.ca1.__ca_process__(msg, cb1);
+                                    },
+                                    // no state change
+                                    function(cb) {
+                                        var cb1 = function(err, data) {
+                                            test.ifError(err);
+                                            var resp =
+                                                json_rpc.getAppReplyData(data);
+                                            test.equals(resp, 'hi');
+                                            cb(null);
+                                        };
+                                        var msg = json_rpc
+                                           .systemRequest('ca1',
+                                                          'getLastMessage');
+
+                                       $.ca1.__ca_process__(msg, cb1);
+                                    },
+                                    // queue
+                                    function(cb) {
+                                        var cb1 = function(err, data) {
+                                            test.ifError(err);
+                                            var resp =
+                                                json_rpc
+                                                .getAppReplyData(data);
+                                            console.log(JSON.stringify(resp));
+                                            test.equals(resp, 0);
+                                            cb(null);
+                                        };
+                                        var msg = json_rpc
+                                            .systemRequest('ca1',
+                                                           'getQueueLength');
+
+                                        $.ca1.__ca_process__(msg, cb1);
+                                    },
+                                    //destroy
+                                    function(cb) {
+                                        ca1 = $.ca1;
+                                        var cb1 = function(err, data) {
+                                            test.ifError(err);
+                                            test.ok(ca1.__ca_isShutdown__);
+                                            cb(null);
+                                        };
+                                        $.ca1.__ca_destroy__(null, cb1);
+                                    },
+                                    // fail on shutdown
+                                     function(cb) {
+                                         var cb1 = function(err, data) {
+                                             test.ifError(err);
+                                             var resp =
+                                                 json_rpc
+                                                 .getSystemErrorCode(data);
+                                             console.log(JSON.stringify(resp));
+                                             test.equals(resp,
+                                                         json_rpc.ERROR_CODES.
+                                                         shutdownCA);
+                                             cb(null);
+                                         };
+                                         var msg = json_rpc
+                                             .systemRequest('ca1',
+                                                            'getQueueLength');
+
+                                         ca1.__ca_process__(msg, cb1);
+                                     }
+
                                 ], function(err, res) {
                                     test.ifError(err);
                                     test.done();
