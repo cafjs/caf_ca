@@ -10,7 +10,9 @@
         "async" : ">=0.1.9"
     },
     "devDependencies": {
-        "nodeunit" : ">=0.9"
+        "nodeunit" : ">=0.9",
+        "caf_redis": "^0.2.0",
+        "caf_session": "^0.2.0"
     },
     "main": "index",
     "homepage": "http://www.cafjs.com",
