@@ -1,4 +1,4 @@
-image: bradrydzewski/node:0.10 
+image: antlai/node:0.10 
 script:
   - npm install
   - npm test
