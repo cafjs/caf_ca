@@ -8,7 +8,8 @@
         "maxHangRetries": 10,
         "maxRetries" : "process.env.maxRetries||5",
         "retryDelay" : "process.env.retryDelay||100",
-        "leaseTimeout": "process.env.leaseTimeout||60"
+        "leaseTimeout": "process.env.leaseTimeout||60",
+        "stateVersion": "0.2.0"
     },
     "components":[
         {
@@ -43,7 +44,6 @@
             "env": {
                 "maxRetries" : "$._.env.maxRetries",
                 "retryDelay" : "$._.env.retryDelay",
-                "stateVersion": "process.env.stateVersion||0.1.0",
                 "leaseTimeout": "$._.env.leaseTimeout"
             },
             "components" : [

@@ -14,18 +14,31 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 "use strict";
+var semver = require('semver');
 
 exports.methods = {
     "__ca_init__" : function(cb) {
-        this.$.log.debug("++++++++++++++++Calling init");
+        this.$.log.debug("---------------Calling init");
         cb(null);
     },
     "__ca_resume__" : function(cp, cb) {
-        this.$.log.debug("++++++++++++++++Calling resume");
+        this.$.log.debug("---------------Calling resume");
         cb(null);
     },
     "__ca_pulse__" : function(cb) {
-        this.$.log.debug("++++++++++++++++Calling pulse");
+        this.$.log.debug("---------------Calling pulse");
+        cb(null);
+    },
+    "__ca_upgrade__" : function(newVersion, cb) {
+        var oldVersion = this.state.__ca_version__;
+        if (semver.valid(oldVersion) && semver.valid(newVersion) &&
+            semver.satisfies(newVersion, '^' + oldVersion)) {
+            this.$.log.debug('update: minor version:automatic update of state');
+        } else {
+            // do some magic to this.state
+            this.$.log.debug('update: major version:done some magic to state');
+        }
+        this.state.__ca_version__ = newVersion;
         cb(null);
     },
     hello: function(msg, cb) {
