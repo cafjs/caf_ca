@@ -10,6 +10,53 @@ var newMsg = function(sessionId, methodName) {
                             methodName);
 };
 
+
+var failedWithException = function(self, test, code, failedMethod, method,
+                                   arg) {
+    return function(cb) {
+console.log('failedWithException');
+        var cb1 = function(err, data) {
+            test.ifError(err);
+            var resp = json_rpc.getSystemErrorCode(data);
+            test.equals(resp, code);
+            cb(null);
+        };
+        var msg = json_rpc.systemRequest('ca', 'failMethodsAndApply',
+                                         [failedMethod], method, [arg]);
+        self.$.top1.$.ca.__ca_process__(msg, cb1);
+    };
+};
+
+var checkLastMessage = function(self, test, last) {
+    return function(cb) {
+console.log('checkLastMessage');
+        var cb1 = function(err, data) {
+            test.ifError(err);
+            var resp =
+                json_rpc.getAppReplyData(data);
+            test.equals(resp, last);
+            cb(null);
+        };
+        var msg = json_rpc.systemRequest('ca', 'getLastMessage');
+        self.$.top1.$.ca.__ca_process__(msg, cb1);
+    };
+};
+
+var checkGoofyState  = function(self, test, last) {
+    return function(cb) {
+console.log('checkGoofyState');
+        var cb1 = function(err, data) {
+            test.ifError(err);
+            var resp =
+                json_rpc.getAppReplyData(data);
+            test.deepEqual(resp, last);
+            cb(null);
+        };
+        var msg = json_rpc.systemRequest('ca', 'getGoofyState');
+        self.$.top1.$.ca.__ca_process__(msg, cb1);
+    };
+};
+
 var app = goofy;
 module.exports = {
     setUp: function (cb) {
@@ -97,79 +144,60 @@ module.exports = {
     failPrepare: function(test) {
         var self = this;
         this.doDestroy = true;
-        test.expect(7);
-        async.series([
-                         function(cb) {
-                             var cb1 = function(err, data) {
-                                 test.ifError(err);
-                                 var resp =
-                                     json_rpc
-                                     .getSystemErrorCode(data);
-                                 test.equals(resp,
-                                             json_rpc.ERROR_CODES.
-                                             exceptionThrown);
-                                 cb(null);
-                             };
-                             var msg = json_rpc
-                                 .systemRequest('ca', 'failMethodsAndApply' ,
-                                                ['__ca_prepare__'], 'hello',
-                                                'bye');
+        test.expect(16);
+        var all = [
+                         //state changes unrolled with exception
+            failedWithException(self, test, json_rpc.ERROR_CODES
+                                .exceptionThrown, '__ca_prepare__',
+                                'hello', 'bye'),
+            checkLastMessage(self, test, 'hi'),
 
-                             self.$.top1.$.ca.__ca_process__(msg, cb1);
-                         },
-                         function(cb) {
-                             var cb1 = function(err, data) {
-                                 test.ifError(err);
-                                 var resp =
-                                     json_rpc.getAppReplyData(data);
-                                 test.equals(resp, 'hi');
-                                 cb(null);
-                             };
-                             var msg = json_rpc
-                                 .systemRequest('ca', 'getLastMessage');
-                             self.$.top1.$.ca.__ca_process__(msg, cb1);
-                         },
+            // state changes to plugin unrolled with exception
+            function(cb) {
+                var cb1 = function(err, data) {
+                    test.ifError(err);
+                    var resp =
+                        json_rpc
+                        .getSystemErrorCode(data);
+                    test.equals(resp,
+                                json_rpc.ERROR_CODES.
+                                exceptionThrown);
+                    cb(null);
+                };
+                var msg = json_rpc
+                    .systemRequest('ca', 'failMethodsAndApply' ,
+                                   ['__ca_prepare__'],
+                                   'setGoofyState',
+                                   [{p: 'bye'}]);
 
-                         function(cb) {
-                             var cb1 = function(err, data) {
-                                 test.ifError(err);
-                                 var resp =
-                                     json_rpc
-                                     .getSystemErrorCode(data);
-                                 test.equals(resp,
-                                             json_rpc.ERROR_CODES.
-                                             exceptionThrown);
-                                 cb(null);
-                             };
-                             var msg = json_rpc
-                                 .systemRequest('ca', 'failMethodsAndApply' ,
-                                                ['__ca_prepare__'],
-                                                'setGoofyState',
-                                                {p: 'bye'});
+                self.$.top1.$.ca.__ca_process__(msg, cb1);
+            },
+            checkGoofyState(self, test, {p: 'hi'}),
 
-                             self.$.top1.$.ca.__ca_process__(msg, cb1);
-                         },
-/*
-                         function(cb) {
-                             var cb1 = function(err, data) {
-                                 test.ifError(err);
-                                 var resp =
-                                     json_rpc.getAppReplyData(data);
-                                 test.deepEqual(resp, {p: 'hi'});
-                                 cb(null);
-                             };
-                             var msg = json_rpc
-                                 .systemRequest('ca', 'getGoofyState');
-                             self.$.top1.$.ca.__ca_process__(msg, cb1);
-                         }
-*/
+            //state changes unrolled with error in callback
+            function(cb) {
+                var cb1 = function(err, data) {
+                    test.ifError(err);
+                    cb(null);
+                };
+                var msg = json_rpc
+                    .systemRequest('ca', 'setThrow' , false);
+                self.$.top1.$.ca.__ca_process__(msg, cb1);
+            },
+            failedWithException(self, test, json_rpc.ERROR_CODES
+                                .prepareFailure, '__ca_prepare__',
+                                'hello', 'bye'),
 
-                     ], function(err, res) {
+            // state changes to plugin unrolled with exception
+            failedWithException(self, test, json_rpc.ERROR_CODES
+                                .prepareFailure, '__ca_prepare__',
+                                'setGoofyState', {p: 'bye'}),
+            checkGoofyState(self, test, {p: 'hi'})
+        ];
+
+        async.series(all, function(err, res) {
                          test.ifError(err);
                          test.done();
                      });
-
-
-
     },
 };

@@ -1,6 +1,6 @@
 
 var caf_comp = require('caf_components');
-var genTransactional = caf_comp.gen_transactional;
+var genPlugCA = caf_comp.gen_plug_ca;
 var myUtils = caf_comp.myUtils;
 
 /**
@@ -10,7 +10,7 @@ var myUtils = caf_comp.myUtils;
  */
 exports.newInstance = function($, spec, cb) {
     try {
-        var that = genTransactional.constructor($, spec);
+        var that = genPlugCA.constructor($, spec);
         var goofyState;
         var failures = {};
         var toThrow = true;
@@ -31,7 +31,7 @@ exports.newInstance = function($, spec, cb) {
         };
 
         that.setGoofyState = function(newState) {
-            that.__ca_lazyApply__("setGoofyStateImpl", newState);
+            that.__ca_lazyApply__("setGoofyStateImpl", [newState]);
         };
 
         that.getGoofyState = function() {

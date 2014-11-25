@@ -95,9 +95,10 @@ exports.methods = {
         cb(null);
     },
     failMethodsAndApply: function(failM, executeM, args, cb) {
+        var self = this;
         Array.isArray(failM) &&
             failM.forEach(function(x) {
-                              this.$.goofy.failMethod(x);
+                              self.$.goofy.failMethod(x);
                           });
         if (typeof executeM === 'string') {
             args.push(cb);
