@@ -3,9 +3,10 @@
     "name" : "ca",
     "description": "A generic Cloud Assistant\n Properties:\n ",
     "env": {
-                "maxRetries" : "process.env.maxRetries||10",
-                "retryDelay" : "process.env.retryDelay||1000",
-                "stateVersion": "process.env.stateVersion||0.1.0",
+        "__ca_temporary__" : true,
+        "maxRetries" : "process.env.maxRetries||10",
+        "retryDelay" : "process.env.retryDelay||1000",
+        "stateVersion": "process.env.stateVersion||0.1.0",
     },
     "components" : [
         {
