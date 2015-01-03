@@ -4,8 +4,12 @@ var json_rpc = require('caf_transport');
 var hello = require('./hello/main.js');
 
 exports.helloworld = function (test) {
-    test.expect(25);
+    test.expect(27);
     var ca1;
+    var meta = {"hello":["msg","cb"],"helloFail":["msg","cb"],
+                "helloException":["msg","cb"],
+                "helloDelayException":["msg","cb"],
+                "getLastMessage":["cb"],"getQueueLength":["cb"]};
     hello.load(null, {name: 'ca1'}, 'ca.json', null, function(err, $) {
                    test.ifError(err);
                    test.equal(typeof($.ca1), 'object',
@@ -34,6 +38,22 @@ exports.helloworld = function (test) {
 
                                         $.ca1.__ca_process__(msg, cb1);
                                     },
+                                    function(cb) {
+                                        var cb1 = function(err, data) {
+                                            test.ifError(err);
+                                            var resp =
+                                                json_rpc.getAppReplyData(data);
+                                            console.log(JSON.stringify(resp));
+                                            test.deepEqual(meta, resp);
+                                            cb(null);
+                                        };
+                                        var msg = json_rpc
+                                            .systemRequest('ca1',
+                                                           '__external_ca_touch__');
+
+                                        $.ca1.__ca_process__(msg, cb1);
+                                    },
+
                                     function(cb) {
                                         var cb1 = function(err, data) {
                                             test.ifError(err);
