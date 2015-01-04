@@ -1,7 +1,7 @@
 var async = require('async');
 var goofy = require('./goofy/main.js');
 
-var json_rpc = require('caf_transport');
+var json_rpc = require('caf_transport').json_rpc;
 
 var newMsg = function(sessionId, methodName) {
     var msg = json_rpc.systemRequest('ca', methodName);

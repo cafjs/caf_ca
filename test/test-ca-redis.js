@@ -3,7 +3,7 @@ var hello = require('./helloRedis/main.js');
 var helloVersion1 = require('./helloVersion1/main.js');
 var helloVersion2 = require('./helloVersion2/main.js');
 
-var json_rpc = require('caf_transport');
+var json_rpc = require('caf_transport').json_rpc;
 
 var newMsg = function(sessionId, methodName) {
     var msg = json_rpc.systemRequest('ca', methodName);
