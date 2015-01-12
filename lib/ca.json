@@ -10,13 +10,31 @@
     },
     "components" : [
         {
+            "name": "log",
+            "module" : "caf_components#plug_ca_log",
+            "description" : "Logger for this CA",
+            "env" : {
+                "maxRetries" : "$._.env.maxRetries",
+                "retryDelay" : "$._.env.retryDelay"
+            },
+            "components" : [
+                {
+                    "module": "caf_components#proxy_log",
+                    "name": "proxy",
+                    "description": "Allows log access to this CA",
+                    "env" : {
+                    }
+                }
+            ]
+        },
+        {
             "module": "caf_session#plug_ca",
             "name": "session",
-            "description": "Manages sessions with clients\n Properties:\n <backChannelTimeout> Max seconds to reset the backchannel.\n",
+            "description": "Manages sessions with clients\n Properties:\n <backchannelTimeout> Max seconds to reset the backchannel.\n",
             "env" : {
                 "maxRetries" : "$._.env.maxRetries",
                 "retryDelay" : "$._.env.retryDelay",
-                "backChannelTimeout" : 8
+                "backchannelTimeout" : 8000
             },
             "components" : [
                 {

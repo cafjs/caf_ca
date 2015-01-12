@@ -199,8 +199,8 @@ module.exports = {
                          function(cb) {
                              var cb1 = function(err, data) {
                                  test.ifError(err);
-                                 var code =  json_rpc.getSystemErrorCode(data);
-                                 test.equal(code,json_rpc.backchannelTimeout);
+                                 var error =  json_rpc.getAppReplyError(data);
+                                 test.ok(error.timeout);
                                  cb(null);
                              };
                              var msg = newMsg ('fooSession', 'whatever');
@@ -226,8 +226,8 @@ module.exports = {
                          function(cb) {
                              var cb1 = function(err, data) {
                                  test.ifError(err);
-                                 var code =  json_rpc.getSystemErrorCode(data);
-                                 test.equal(code,json_rpc.backchannelTimeout);
+                                 var error =  json_rpc.getAppReplyError(data);
+                                 test.ok(error.timeout);
                                  cb(null);
                              };
                              var msg = newMsg ('fooSession', 'whatever');

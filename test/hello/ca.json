@@ -18,6 +18,25 @@
             }
         },
         {
+            "module": "caf_session#plug_ca",
+            "name": "session",
+            "description": "Manages sessions with clients\n Properties:\n <backchannelTimeout> Max seconds to reset the backchannel.\n",
+            "env" : {
+                "maxRetries" : "$._.env.maxRetries",
+                "retryDelay" : "$._.env.retryDelay",
+                "backchannelTimeout" : 8000
+            },
+            "components" : [
+                {
+                    "module": "caf_session#proxy",
+                    "name": "proxy",
+                    "description": "Provides information of the session of this incoming request",
+                    "env" : {
+                    }
+                }
+            ]
+        },
+        {
             "module": "./plug_ca_inqueue",
             "name": "inq",
             "description": "Manages a shared queue for incoming requests",
