@@ -148,7 +148,7 @@ module.exports = {
     failPrepare: function(test) {
         var self = this;
         this.doDestroy = true;
-        test.expect(16);
+        test.expect(20);
         var all = [
                          //state changes unrolled with exception
             failedWithException(self, test, json_rpc.ERROR_CODES
@@ -173,6 +173,25 @@ module.exports = {
                                    ['__ca_prepare__'],
                                    'setGoofyState',
                                    [{p: 'bye'}]);
+
+                self.$.top1.$.ca.__ca_process__(msg, cb1);
+            },
+            checkGoofyState(self, test, {p: 'hi'}),
+
+            // state changes to plugin unrolled with non-serializable state
+            function(cb) {
+                var cb1 = function(err, data) {
+                    test.ifError(err);
+                    var resp =
+                        json_rpc
+                        .getSystemErrorCode(data);
+                    test.equals(resp,
+                                json_rpc.ERROR_CODES.
+                                prepareFailure);
+                    cb(null);
+                };
+                var msg = json_rpc
+                    .systemRequest('ca', 'noJSONSerializableState', {p: 'bye'});
 
                 self.$.top1.$.ca.__ca_process__(msg, cb1);
             },

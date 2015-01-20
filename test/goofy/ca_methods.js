@@ -90,6 +90,13 @@ exports.methods = {
         this.$.goofy.setGoofyState(newState);
         cb(null);
     },
+    noJSONSerializableState: function(newState, cb) {
+        var p = {};
+        p.x = p; // circular non-serializable
+        this.state.noSerializable = p;
+        this.$.goofy.setGoofyState(newState);
+        cb(null);
+    },
     setThrow: function(isThrown, cb) {
         this.$.goofy.setThrow(isThrown);
         cb(null);
