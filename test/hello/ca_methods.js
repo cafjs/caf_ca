@@ -17,6 +17,7 @@ limitations under the License.
 
 exports.methods = {
     hello: function(msg, cb) {
+        console.log('My name is:' + this.__ca_getName__());
         this.state.lastMsg = msg;
         cb(null, 'Bye:' + msg);
     },
