@@ -4,10 +4,10 @@
     "description": "A generic Cloud Assistant\n Properties:\n ",
     "env": {
         "__ca_temporary__" : true,
-        "maxRetries" : "process.env.maxRetries||10",
-        "retryDelay" : "process.env.retryDelay||1000",
-        "stateVersion": "process.env.stateVersion||0.1.0",
-        "leaseTimeout": "process.env.leaseTimeout||60"
+        "maxRetries" : "process.env.MAX_RETRIES||10",
+        "retryDelay" : "process.env.RETRY_DELAY||1000",
+        "stateVersion": "process.env.STATE_VERSION||0.1.0",
+        "leaseTimeout": "process.env.LEASE_TIMEOUT||60"
     },
     "components" : [
         {
@@ -29,13 +29,59 @@
             ]
         },
         {
+            "module": "caf_security#plug_ca",
+            "name": "security",
+            "description": "Manages authorization checks for this CA.",
+            "env" : {
+                "maxRetries" : "$._.env.maxRetries",
+                "retryDelay" : "$._.env.retryDelay",
+                "defaultRules" : [
+                    {
+                        "type" : "caf.simpleRule",
+                        "ac" : {
+                            "caOwner" : "!SELF",
+                            "caLocalName" : "!CA_LOCAL"
+                        }
+                    }
+                ]
+            },
+            "components" : [
+                {
+                    "module": "caf_security#proxy",
+                    "name": "proxy",
+                    "description": "Provides authorization management API.",
+                    "env" : {
+
+                    }
+                }
+            ]
+        },
+        {
+            "module": "caf_sharing#plug_ca",
+            "name": "sharing",
+            "description": "Manages Shared Maps for a CA",
+            "env" : {
+                "maxRetries" : "$._.env.maxRetries",
+                "retryDelay" : "$._.env.retryDelay"
+            },
+            "components" : [
+                {
+                    "module": "caf_sharing#proxy",
+                    "name": "proxy",
+                    "description": "Allows access to this CA Shared Maps",
+                    "env" : {
+                    }
+                }
+            ]
+        },
+        {
             "module": "caf_session#plug_ca",
             "name": "session",
             "description": "Manages sessions with clients\n Properties:\n <backchannelTimeout> Max seconds to reset the backchannel.\n",
             "env" : {
                 "maxRetries" : "$._.env.maxRetries",
                 "retryDelay" : "$._.env.retryDelay",
-                "backchannelTimeout" : 8000
+                "backchannelTimeout" : "process.env.BACKCHANNEL_TIMEOUT||8000"
             },
             "components" : [
                 {
