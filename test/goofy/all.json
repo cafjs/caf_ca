@@ -8,7 +8,11 @@
         "maxHangRetries": 10,
         "maxRetries" : "process.env.maxRetries||5",
         "retryDelay" : "process.env.retryDelay||100",
-        "leaseTimeout": "process.env.leaseTimeout||60"
+        "leaseTimeout": "process.env.leaseTimeout||60",
+        "appProtocol" : "process.env.APP_PROTOCOL||https",
+        "appPublisher" : "process.env.APP_PUBLISHER||goofy",
+        "appLocalName" : "process.env.APP_LOCAL_NAME||goofy",
+        "appSuffix" : "process.env.APP_SUFFIX||cafjs.com"
     },
     "components":[
         {
@@ -24,6 +28,7 @@
             "module" : "caf_redis#plug",
             "description" : "redisPlug",
             "env" : {
+                "appName" : "goofy-goofy",
                "nodeId": "sasdasd.vcap.me:4000",
                "paas" : "redis",
                 "localNodeId" : "localhost:3000",

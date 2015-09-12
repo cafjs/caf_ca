@@ -24,6 +24,7 @@
             "module" : "caf_redis#plug",
             "description" : "redisPlug",
             "env" : {
+                "appName" : "goofy-goofy3",
                "nodeId": "sasdasd.vcap.me:4000",
                "paas" : "redis",
                 "localNodeId" : "localhost:3000",
