@@ -9,7 +9,8 @@ exports.helloworld = function (test) {
     var meta = {"hello":["msg","cb"],"helloFail":["msg","cb"],
                 "helloException":["msg","cb"],
                 "helloDelayException":["msg","cb"],
-                "getLastMessage":["cb"],"getQueueLength":["cb"]};
+                "getLastMessage":["cb"],"getQueueLength":["cb"],
+                "__external_ca_touch__": [ 'cb' ]};
     hello.load(null, {name: 'ca1'}, 'ca.json', null, function(err, $) {
                    test.ifError(err);
                    test.equal(typeof($.ca1), 'object',
