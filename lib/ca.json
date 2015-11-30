@@ -1,5 +1,5 @@
 {
-    "module": "caf_ca#ca_main",
+    "module": "./ca_main",
     "name" : "ca",
     "description": "A generic Cloud Assistant\n Properties:\n ",
     "env": {
@@ -94,7 +94,7 @@
             ]
         },
         {
-            "module": "caf_ca#plug_ca_inqueue",
+            "module": "./plug_ca_inqueue",
             "name": "inq",
             "description": "Manages a shared queue for incoming requests",
             "env" : {
@@ -103,7 +103,7 @@
             },
             "components" : [
                 {
-                    "module": "caf_ca#proxy_inqueue",
+                    "module": "./proxy_inqueue",
                     "name": "proxy",
                     "description": "Allows access to this CA  input queue",
                     "env" : {
@@ -112,7 +112,7 @@
             ]
         },
         {
-            "module": "caf_ca#plug_ca_handler",
+            "module": "./plug_ca_handler",
             "name": "handler",
             "description": "Handler object with all the app methods.",
             "env" : {
@@ -122,7 +122,7 @@
             },
             "components" : [
                 {
-                    "module": "caf_ca#proxy_handler",
+                    "module": "./proxy_handler",
                     "name": "props",
                     "description": "Exposes read-only properties to app methods",
                     "env" : {
