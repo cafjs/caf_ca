@@ -1,4 +1,4 @@
-var async = require('async');
+var async = require('caf_components').async;
 var goofy = require('./goofy/main.js');
 
 var json_rpc = require('caf_transport').json_rpc;

@@ -1,7 +1,7 @@
 {
     "name": "caf_ca",
     "description": "Cloud Assistant implementation",
-    "version": "0.2.23",
+    "version": "0.2.24",
     "author": "Antonio Lain <antlai@cafjs.com>",
     "dependencies": {
         "caf_components": "^0.2.0",
@@ -9,8 +9,7 @@
         "caf_session": "^0.2.0",
         "caf_security" : "^0.2.0",
         "caf_sharing" :"^0.2.0",
-        "semver": "^4.1.0",
-        "async" : ">=0.1.9"
+        "semver": "^4.1.0"
     },
     "devDependencies": {
         "nodeunit" : ">=0.9",

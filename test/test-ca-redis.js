@@ -1,4 +1,4 @@
-var async = require('async');
+var async = require('caf_components').async;
 var hello = require('./helloRedis/main.js');
 var helloVersion1 = require('./helloVersion1/main.js');
 var helloVersion2 = require('./helloVersion2/main.js');
