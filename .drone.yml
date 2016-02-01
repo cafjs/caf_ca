@@ -1,11 +1,9 @@
 build:
   image: node:0.10 
-  components:
+  commands:
     - npm install
     - npm test
 
 compose:
-  redis:
+  database:
     image: redis:2.8
-
-    
