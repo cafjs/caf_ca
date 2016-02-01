@@ -1,10 +1,11 @@
-image: drone/node:0.10 
-script:
-  - npm install
-  - npm test
-services:
-  - redis
-notify:
-  email:
-    recipients:
-      - ci.cafjs@gmail.com
+build:
+  image: node:0.10 
+  components:
+    - npm install
+    - npm test
+
+compose:
+  redis:
+    image: redis:2.8
+
+    
