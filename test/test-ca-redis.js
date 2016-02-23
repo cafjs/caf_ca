@@ -319,6 +319,6 @@ module.exports = {
                          app = hello;
                          test.done();
                      });
-    },
+    }
 
 };
