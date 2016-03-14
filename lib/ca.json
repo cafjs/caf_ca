@@ -75,6 +75,24 @@
             ]
         },
         {
+            "module": "caf_pubsub#plug_ca",
+            "name": "pubsub",
+            "description": "Manages a Pub/Sub service for a CA",
+            "env" : {
+                "maxRetries" : "$._.env.maxRetries",
+                "retryDelay" : "$._.env.retryDelay"
+            },
+            "components" : [
+                {
+                    "module": "caf_pubsub#proxy",
+                    "name": "proxy",
+                    "description": "Allows access to this CA Pub/Sub service",
+                    "env" : {
+                    }
+                }
+            ]
+        },
+        {
             "module": "caf_session#plug_ca",
             "name": "session",
             "description": "Manages sessions with clients\n Properties:\n <backchannelTimeout> Max seconds to reset the backchannel.\n",
