@@ -54,7 +54,9 @@ module.exports = {
                 "helloException":["msg","cb"],
                 "helloDelayException":["msg","cb"],
                 "getLastMessage":["cb"],"getQueueLength":["cb"],
-                "__external_ca_touch__": [ 'cb' ]};
+                    "__external_ca_touch__": [ 'cb' ],
+                    "__external_ca_multi__": [ 'multiArgs', 'cb' ]
+                   };
 
         test.equal(typeof(self.$.top1.$.ca), 'object',
                    'Cannot create CA');
