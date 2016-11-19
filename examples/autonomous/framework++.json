@@ -1,0 +1,15 @@
+{
+    "name": "top",
+    "env" : {
+        "appPublisher" :"root",
+        "appLocalName" : "autonomous",
+        "appSuffix" : "vcap.me",
+        "interval" : 2000
+    },
+    "components": [
+        {
+            "name": "security",
+            "module" : null
+        }
+    ]
+}

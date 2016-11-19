@@ -1,0 +1,12 @@
+{
+    "name" : "ca",
+    "env": {
+        "stateVersion": "0.2.0"
+    },
+    "components" : [
+        {
+            "name": "security",
+            "module": null
+        }
+    ]
+}
