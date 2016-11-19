@@ -14,14 +14,14 @@ exports.methods = {
             this.$.log.debug('update: minor version:automatic update of state');
         } else {
             // do some magic to this.state
-            this.$.log.debug('update: major version mismatch ' + newVersion );
+            this.$.log.debug('update: major version mismatch ' + newVersion);
             this.state.myCounter = this.state.counter;
             delete this.state.counter;
         }
         this.state.__ca_version__ = newVersion;
         cb(null);
     },
-     increment: function(cb) {
+    increment: function(cb) {
         this.state.myCounter = this.state.myCounter + 1;
         cb(null, this.state.myCounter);
     },

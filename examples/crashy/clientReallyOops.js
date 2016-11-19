@@ -34,7 +34,7 @@ s.onopen = function() {
             console.log(counter);
             s.increment('Really Oops', cb);
         },
-    ], function(err, counter) {
+    ], function() {
         console.log('BUG: IT SHOULD NEVER REACH THIS POINT');
     });
 };
