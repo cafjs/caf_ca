@@ -7,7 +7,8 @@
         "maxRetries" : "process.env.MAX_RETRIES||10",
         "retryDelay" : "process.env.RETRY_DELAY||1000",
         "stateVersion": "process.env.STATE_VERSION||0.1.0",
-        "leaseTimeout": "process.env.LEASE_TIMEOUT||60"
+        "leaseTimeout": "process.env.LEASE_TIMEOUT||60",
+        "methodsFileName" : "process.env.METHODS_FILE_NAME||./ca_methods.js"
     },
     "components" : [
         {
@@ -136,7 +137,7 @@
             "env" : {
                 "maxRetries" : "$._.env.maxRetries",
                 "retryDelay" : "$._.env.retryDelay",
-                "methodsFileName" : "./ca_methods.js"
+                "methodsFileName" : "$._.env.methodsFileName"
             },
             "components" : [
                 {
