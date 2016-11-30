@@ -2,7 +2,6 @@
 /* eslint-disable  no-console */
 
 var caf_core = require('caf_core');
-var json_rpc = caf_core.caf_transport.json_rpc;
 var caf_comp = caf_core.caf_components;
 var async = caf_comp.async;
 var myUtils = caf_comp.myUtils;
@@ -42,7 +41,7 @@ s.onopen = function() {
 };
 
 s.onmessage = function(msg) {
-    var counter = json_rpc.getMethodArgs(msg)[0];
+    var counter = caf_cli.getMethodArgs(msg)[0];
     console.log('Got counter:' + counter);
     maxMessages = maxMessages - 1;
     if (maxMessages <= 0) {
