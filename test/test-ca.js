@@ -21,7 +21,7 @@ module.exports = {
                      }
                  });
     },
-    
+
     tearDown: function (cb) {
         var self = this;
         if (!this.$) {
@@ -45,17 +45,17 @@ module.exports = {
             ], cb);
         }
     },
-    
+
     helloworld : function (test) {
         test.expect(26);
         var self = this;
         var ca1;
-        var meta = {"hello":["msg","cb"],"helloFail":["msg","cb"],
-                "helloException":["msg","cb"],
-                "helloDelayException":["msg","cb"],
-                "getLastMessage":["cb"],"getQueueLength":["cb"],
-                    "__external_ca_touch__": [ 'cb' ],
-                    "__external_ca_multi__": [ 'multiArgs', 'cb' ]
+        var meta = {"hello":["msg"],"helloFail":["msg"],
+                "helloException":["msg"],
+                "helloDelayException":["msg"],
+                "getLastMessage":[],"getQueueLength":[],
+                    "__external_ca_touch__": [],
+                    "__external_ca_multi__": [ 'multiArgs' ]
                    };
 
         test.equal(typeof(self.$.top1.$.ca), 'object',
