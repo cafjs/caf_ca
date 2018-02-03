@@ -3,7 +3,6 @@
 
 var caf_core = require('caf_core');
 var caf_comp = caf_core.caf_components;
-var async = caf_comp.async;
 var myUtils = caf_comp.myUtils;
 var caf_cli = caf_core.caf_cli;
 
@@ -18,26 +17,17 @@ var s = new caf_cli.Session(URL);
 
 var maxMessages = 3;
 
-s.onopen = function() {
-    async.waterfall([
-        function(cb) {
-            s.increment(cb);
-        },
-        function(counter, cb) {
-            console.log(counter);
-            s.increment(cb);
-        },
-        function(counter, cb) {
-            console.log(counter);
-            s.getCounter(cb);
-        },
-    ], function(err, counter) {
-        if (err) {
-            console.log(myUtils.errToPrettyStr(err));
-        } else {
-            console.log('Final count:' + counter);
-        }
-    });
+s.onopen = async function() {
+    try {
+        var counter = await s.increment().getPromise();
+        console.log(counter);
+        counter = await s.increment().getPromise();
+        console.log(counter);
+        counter = await s.getCounter().getPromise();
+        console.log('Last count:' + counter);
+    } catch (err) {
+        s.close(err);
+    }
 };
 
 s.onmessage = function(msg) {

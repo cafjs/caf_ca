@@ -9,30 +9,36 @@ See http://www.cafjs.com
 
 This library provides components to create a CA.
 
-A CA is an Actor, in the spirit of an Erlang/OTP `gen_server`, with a queue that serializes message processing, a location-independent name, some private state, and the ability to change behavior or interact with other CAs.
+A CA is an Actor, in the spirit of an Erlang/OTP `gen_server`, with a queue that serializes message processing, a location-independent name, some private state, and the ability to change behavior, or interact with other CAs.
 
 A CA processes a message in a transaction. External interactions are mediated by transactional plugins, and delayed until the message commits. Any non-commited changes to its internal state can be rolled back if errors are detected. State changes and pending interactions always checkpoint with a remote service before commiting. See {@link external:caf_components/gen_transactional} for details.
 
 This makes it safe to kill, **at any time**, a node.js process hosting thousands of  CAs. The expectations of the external world are always consistent with the recovered CAs.
 
-In fact, our favorite load-balancing strategy is just to kill hot processes, and randomly spread recovered CAs to other instances.
+In fact, our favorite load-balancing strategy is to just kill hot processes, and randomly spread recovered CAs to other instances.
 
 ### Hello World (see `examples/helloworld`)
 
-A CA method invocation is implemented by queueing and processing a message. CAs are defined by two sets of methods:
+CA methods are **always** asynchronous methods. They can be implemented using the `async/await` pattern, or using standard callbacks. In the first case we emulate the callback by returning an array with an error/data pair.
+
+When the method returns this array, or invokes the callback as a tail call, the framework knows that the message has been fully processed, and your application is ready for the next one. This enforces message serialization.
+
+Never throw in a method to propagate an application error. An unhandled exception closes the client session. This makes it easier to find programming errors.
+
+CAs have two sets of methods:
 
 * *internal:* always prefixed by `__ca_` and called by the framework.
-* *external:* called by the client library.
+* *external:* called remotely by the client library.
 
 ```
 exports.methods = {
-    __ca_init__: function(cb) {
+    async __ca_init__() {
         this.state.counter = 0;
-        cb(null);
+        return [];
     },
-    increment: function(cb) {
+    async increment() {
         this.state.counter = this.state.counter + 1;
-        cb(null, this.state.counter);
+        return [null, this.state.counter];
     }
 };
 ```
@@ -41,19 +47,11 @@ The *internal* method `__ca_init__` is called by the framework just once, initia
 
 The object property `this.state` should contain a JSON-serializable value, and is managed transactionally as described above.
 
-In contrast, `this.scratch` can contain anything, but it is not checkpointed or rolled back.
+In contrast, `this.scratch` can contain anything, but is not checkpointed or rolled back.
 
 A CA is a sealed object, and application code should not try to add any properties outside `this.state` or `this.scratch`.
 
-The *external* method `increment` is called by the client library, see `client.js` in the `examples` directory and {@link external:caf_cli}.
-
-CA methods **always** return errors or results in a standard `node.js` callback, i.e., `cb`. This callback is a tail call that informs the framework that we are done processing this message, and we are ready for the next one.
-
-As we will show next, callbacks are needed to enforce message serialization when methods contain asynchronous calls.
-
-Moreover, the combination of a queue for message serialization, state isolation, and tail call callbacks, eliminates a common asynchronous API design flaw: *Releasing Zalgo* {@link http://blog.izs.me/post/59142742143/designing-apis-for-asynchrony}.
-
-In CAF an external caller cannot tell if the callback was called immediately, or at some point in the future.
+*External* methods, such as `increment`, are called by the client library, see `client.js` in the `examples` directory and {@link external:caf_cli}.
 
 
 ### Crashy Counter (see `examples/crashy`)
@@ -61,22 +59,21 @@ In CAF an external caller cannot tell if the callback was called immediately, or
 Let's look at a more interesting CA.
 
 ```
+var setTimeoutPromise = util.promisify(setTimeout);
 exports.methods = {
      ...
-    increment: function(crash, cb) {
-        var self = this;
+    async increment(crash) {
         var oldValue = this.state.counter;
         this.state.counter = this.state.counter + 1;
-        setTimeout(function() {
-            if (crash === 'Oops') {
-                cb(new Error('Oops')); // Case 1
-            } else if (crash === 'Really Oops') {
-                throw new Error('Really Oops'); // Case 2
-            } else {
-                assert(self.state.counter === (oldValue + 1)); // Assertion 1
-                cb(null, self.state.counter); // Case 3
-            }
-        }, 1000);
+        await setTimeoutPromise(1000);
+        if (crash === 'Oops') {
+            return [new Error('Oops')];// Case 1
+        } else if (crash === 'Really Oops') {
+            throw new Error('Really Oops'); // Case 2
+        } else {
+            assert(this.state.counter === (oldValue + 1)); // Assertion 1
+            return [null, this.state.counter]; // Case 3
+        }
     }
 }
 ```
@@ -87,7 +84,7 @@ The client can receive three different type of responses:
 
 * *Case 1* An application error propagated by the client's callback. Changes to `this.state.counter` are rolled back.
 
-* *Case 2* An uncaught error, assumed to be an application bug, that closes the client session with an error. The error is handled by the framework (we use a fresh node.js *domain* per request), and changes to `this.state.counter` are rolled back. Fix it!
+* *Case 2* An unhandled error, assumed to be an application bug, that closes the client session with an error. The framework also recovers from this error, with changes to `this.state.counter` being rolled back.
 
 * *Case 3* A new counter value returned in the client's callback.
 
@@ -97,40 +94,41 @@ The client can receive three different type of responses:
 ```
 exports.methods = {
     ...
-    __ca_resume__: function(cp, cb) {
+    async __ca_resume__(cp) {
         this.$.log.debug('Resuming with counter:' + cp.state.counter);
-        cb(null);
+        return [];
     },
-    __ca_pulse__: function(cb) {
+    async __ca_pulse() {
         this.state.counter = this.state.counter + 1;
-        cb(null);
+        return [];
     }
     ...
 }
 ```
 
-The *internal* method `__ca_resume__` is called every time we reload the CA state from a checkpoint `cp`. It allows customization after migration or failure recovery.
+Declaring a method `__ca_pulse__` guarantees that the framework will periodically invoke it, enabling autonomous behavior.
 
-Even if nobody calls the external methods, declaring a method `__ca_pulse__` guarantees that the framework will periodically invoke it, enabling autonomous behavior.
+The method `__ca_resume__` is called every time we reload the CA state from a checkpoint `cp`. It allows customization after migration or failure recovery.
+
 
 #### Plugins
 
 A CA extends its capabilities with a plugin architecture. CAF.js uses a component model {@link external:caf_components} to describe plugins with a configuration file `ca.json`. See `lib/ca.json` for an example.
 
-A plugin is exposed to application code with a proxy (see {@link external:caf_components/gen_proxy}). These proxies become properties of the object `this.$`.
+A plugin is exposed to application code with a security proxy (see {@link external:caf_components/gen_proxy}). These proxies are properties of the object `this.$`.
 
 For example, the following CA uses two proxies: `log`, a logger plugin, and `session`, a plugin providing persistent sessions (see {@link external:caf_session}).
 
 ```
 exports.methods = {
     ...
-    __ca_pulse__: function(cb) {
+    async __ca_pulse__() {
         this.state.counter = this.state.counter + 1;
         if (this.state.counter % 5 === 0) {
             this.$.log.debug('counter %5 === 0 with ' + this.state.counter);
             this.$.session.notify([this.state.counter]);
         }
-        cb(null);
+        return [];
     }
     ...
 }
@@ -138,7 +136,9 @@ exports.methods = {
 
 ### Versioning (see `examples/versioning`)
 
-When the CA implementation changes, the checkpointed CA state may be incompatible with the new code.
+(This example uses callbacks instead of `async/await`. Both are first-class citizens of the platform, but if you use node 8 or newer, we recommend `async/await` because programs are easier to read.)
+
+When the implementation of a CA changes, the checkpointed state may be incompatible with the new code.
 
 We use `semver` conventions, and the configuration property `stateVersion`, to track versions of `this.state`.
 
@@ -146,7 +146,7 @@ The value of `stateVersion` is stored in the checkpoint as property `this.state.
 
 By default, if `stateVersion` satisfies semver expression `^this.state.__ca_version__` the state transparently upgrades. Otherwise, loading fails.
 
-To override this failure, the CA needs to provide an implementation of `__ca_upgrade__`, a method called before processing any messages. This method knows how to upgrade `this.state` safely.
+To avoid this failure, the CA needs to provide an implementation of `__ca_upgrade__`, a method called before processing any messages. This method knows how to upgrade `this.state` safely.
 
 For example, changing `this.state.counter` to `this.state.myCounter`:
 

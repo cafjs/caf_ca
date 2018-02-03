@@ -2,29 +2,30 @@
 
 var caf = require('caf_core');
 var assert = require('assert');
+var util = require('util');
+
+var setTimeoutPromise = util.promisify(setTimeout);
 
 exports.methods = {
-    __ca_init__: function(cb) {
+    async __ca_init__() {
         this.state.counter = 0;
-        cb(null);
+        return [];
     },
-    increment: function(crash, cb) {
-        var self = this;
+    async increment(crash) {
         var oldValue = this.state.counter;
         this.state.counter = this.state.counter + 1;
-        setTimeout(function() {
-            if (crash === 'Oops') {
-                cb(new Error('Oops'));
-            } else if (crash === 'Really Oops') {
-                throw new Error('Really Oops');
-            } else {
-                assert(self.state.counter === (oldValue + 1));
-                cb(null, self.state.counter);
-            }
-        }, 1000);
+        await setTimeoutPromise(1000);
+        if (crash === 'Oops') {
+            return [new Error('Oops')];
+        } else if (crash === 'Really Oops') {
+            throw new Error('Really Oops');
+        } else {
+            assert(this.state.counter === (oldValue + 1));
+            return [null, this.state.counter];
+        }
     },
-    getCounter: function(cb) {
-        cb(null, this.state.counter);
+    async getCounter() {
+        return [null, this.state.counter];
     }
 };
 

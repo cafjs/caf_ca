@@ -15,21 +15,22 @@ limitations under the License.
 */
 "use strict";
 var semver = require('semver');
+var util = require('util');
 
 exports.methods = {
-    "__ca_init__" : function(cb) {
+    async __ca_init__() {
         this.$.log.debug("---------------Calling init");
-        cb(null);
+        return [];
     },
-    "__ca_resume__" : function(cp, cb) {
+    async __ca_resume__(cp) {
         this.$.log.debug("---------------Calling resume");
-        cb(null);
+        return [];
     },
-    "__ca_pulse__" : function(cb) {
+    async __ca_pulse__() {
         this.$.log.debug("---------------Calling pulse");
-        cb(null);
+        return [];
     },
-    "__ca_upgrade__" : function(newVersion, cb) {
+    async __ca_upgrade__(newVersion) {
         var oldVersion = this.state.__ca_version__;
         if (semver.valid(oldVersion) && semver.valid(newVersion) &&
             semver.satisfies(newVersion, '^' + oldVersion)) {
@@ -39,27 +40,27 @@ exports.methods = {
             this.$.log.debug('update: major version:done some magic to state');
         }
         this.state.__ca_version__ = newVersion;
-        cb(null);
+        return [];
     },
-    hello: function(msg, cb) {
+    async hello(msg) {
         this.$.log && this.$.log.debug('Hello');
         this.state.lastMsg = msg;
-        cb(null, 'Bye:' + msg);
+        return [null, 'Bye:' + msg];
     },
-    helloNotify: function(msg, cb) {
+    async helloNotify(msg) {
         this.$.log && this.$.log.debug('HelloNotify');
         this.state.lastMsg = msg;
         this.$.session.notify(['hello', 'planet'], 'fooSession');
-        cb(null, 'Bye:' + msg);
+        return [null, 'Bye:' + msg];
     },
-    helloNotifyFail: function(msg, cb) {
+    async helloNotifyFail(msg) {
         this.$.log && this.$.log.debug('HelloNotify');
         this.state.lastMsg = msg;
         this.$.session.notify(['hello', 'planet'], 'fooSession');
         var err = new Error('Something bad happened');
-        cb(err, 'Bye:' + msg);
+        return [err, 'Bye:' + msg];
     },
-    helloNotifyException: function(msg, cb) {
+    async helloNotifyException(msg) {
         this.$.log && this.$.log.debug('HelloNotify');
         this.state.lastMsg = msg;
         this.$.session.notify(['helloException', 'planet'], 'fooSession');
@@ -67,14 +68,16 @@ exports.methods = {
             var err = new Error('Something really bad happened');
             throw err;
         };
-        setTimeout(f, 100);
+        var setTimeoutPromise = util.promisify(setTimeout);
+        setTimeoutPromise(100);
+        f();
     },
-    helloFail: function(msg, cb) {
+    async helloFail(msg) {
         this.state.lastMsg = msg;
         var err = new Error('Something bad happened');
-        cb(err);
+        return [err];
     },
-    helloException: function(msg, cb) {
+    async helloException(msg) {
         this.state.lastMsg = msg;
         var f = function() {
             var err = new Error('Something really bad happened');
@@ -82,18 +85,20 @@ exports.methods = {
         };
         f();
     },
-    helloDelayException: function(msg, cb) {
+    async helloDelayException(msg) {
         this.state.lastMsg = msg;
         var f = function() {
             var err = new Error('Something really bad happened');
             throw err;
         };
-        setTimeout(f, 100);
+        var setTimeoutPromise = util.promisify(setTimeout);
+        setTimeoutPromise(100);
+        f();
     },
-    getLastMessage: function(cb) {
-        cb(null, this.state.lastMsg);
+    async getLastMessage() {
+        return [null, this.state.lastMsg];
     },
-    getQueueLength: function(cb) {
-        cb(null, this.$.inq.queueLength());
+    async getQueueLength() {
+        return [null, this.$.inq.queueLength()];
     }
 };

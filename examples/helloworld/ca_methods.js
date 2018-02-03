@@ -3,16 +3,16 @@
 var caf = require('caf_core');
 
 exports.methods = {
-    __ca_init__: function(cb) {
+    async __ca_init__() {
         this.state.counter = 0;
-        cb(null);
+        return [];
     },
-    increment: function(cb) {
+    async increment() {
         this.state.counter = this.state.counter + 1;
-        cb(null, this.state.counter);
+        return [null, this.state.counter];
     },
-    getCounter: function(cb) {
-        cb(null, this.state.counter);
+    async getCounter() {
+        return [null, this.state.counter];
     }
 };
 

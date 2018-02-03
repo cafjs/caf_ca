@@ -3,7 +3,6 @@
 
 var caf_core = require('caf_core');
 var caf_comp = caf_core.caf_components;
-var async = caf_comp.async;
 var myUtils = caf_comp.myUtils;
 var caf_cli = caf_core.caf_cli;
 
@@ -16,27 +15,18 @@ var URL = 'http://root-crashy.vcap.me:3000/#from=foo-ca1&ca=foo-ca1';
 
 var s = new caf_cli.Session(URL);
 
-s.onopen = function() {
-    async.waterfall([
-        function(cb) {
-            s.increment('ok', cb);
-        },
-        function(counter, cb) {
-            console.log(counter);
-            s.increment('ok', cb);
-        },
-        function(counter, cb) {
-            console.log(counter);
-            s.getCounter(cb);
-        },
-    ], function(err, counter) {
-        if (err) {
-            console.log(myUtils.errToPrettyStr(err));
-        } else {
-            console.log('Final count:' + counter);
-            s.close();
-        }
-    });
+s.onopen = async function() {
+    try {
+        var counter = await s.increment('ok').getPromise();
+        console.log(counter);
+        counter = await s.increment('ok').getPromise();
+        console.log(counter);
+        counter = await s.getCounter().getPromise();
+        console.log('Final count:' + counter);
+        s.close();
+    } catch (ex) {
+        s.close(ex);
+    }
 };
 
 s.onclose = function(err) {
