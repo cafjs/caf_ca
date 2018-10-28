@@ -30,6 +30,24 @@
             ]
         },
         {
+            "module": "caf_crossapp#plug_ca",
+            "name": "crossapp",
+            "description": "Manages a cross-app call service for a CA",
+            "env" : {
+                "maxRetries" : "$._.env.maxRetries",
+                "retryDelay" : "$._.env.retryDelay"
+            },
+            "components" : [
+                {
+                    "module": "caf_crossapp#proxy",
+                    "name": "proxy",
+                    "description": "Allows access to this CA call service",
+                    "env" : {
+                    }
+                }
+            ]
+        },
+        {
             "module": "caf_security#plug_ca",
             "name": "security",
             "description": "Manages authorization checks for this CA.",
