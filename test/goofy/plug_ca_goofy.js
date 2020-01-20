@@ -10,7 +10,7 @@ var myUtils = caf_comp.myUtils;
  */
 exports.newInstance = function($, spec, cb) {
     try {
-        var that = genPlugCA.constructor($, spec);
+        var that = genPlugCA.create($, spec);
         var goofyState;
         var failures = {};
         var toThrow = true;

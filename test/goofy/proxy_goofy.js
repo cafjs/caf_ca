@@ -11,7 +11,7 @@ var genProxy = caf_comp.gen_proxy;
 exports.newInstance = function($, spec,  cb) {
 
     try {
-        var that = genProxy.constructor($, spec);
+        var that = genProxy.create($, spec);
 
         that.setThrow = function(isThrown) {
             $._.setThrow(isThrown);
