@@ -1,6 +1,6 @@
 'use strict';
-var semver = require('semver');
-var caf = require('caf_core');
+const semver = require('semver');
+const caf = require('caf_core');
 
 exports.methods = {
     __ca_init__: function(cb) {
@@ -8,7 +8,7 @@ exports.methods = {
         cb(null);
     },
     __ca_upgrade__: function(newVersion, cb) {
-        var oldVersion = this.state.__ca_version__;
+        const oldVersion = this.state.__ca_version__;
         if (semver.valid(oldVersion) && semver.valid(newVersion) &&
             semver.satisfies(newVersion, '^' + oldVersion)) {
             this.$.log.debug('update: minor version:automatic update of state');

@@ -22,6 +22,6 @@ The counter state should propagate to the second version
 
 ## Callbacks vs async/await
 
-This example uses callbacks instead of async/await. Callbacks are compatible with node 6, and they could be marginally faster. However, the recommended option is async/await because the code is typically easier to read.
+This example uses callbacks instead of async/await. However, going forward the recommended option is async/await because the code is typically easier to read.
 
-In CAF.js we can mix asynchronous methods of different types. However,  a method using callbacks should never use the `async` tag. Similarly, we should never return an array *and* call the callback. To avoid this kind of mistakes it is recoommended to choose a consistent style for all the methods.
+In `Caf.js` we can mix asynchronous methods of different types. However,  a method using callbacks should never use the `async` tag. Similarly, we should never return an array *and* call the callback. To avoid this kind of mistakes it is recommended to choose a consistent style for all the methods.

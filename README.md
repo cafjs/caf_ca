@@ -1,13 +1,13 @@
-# CAF.js (Cloud Assistant Framework)
+# Caf.js
 
 Co-design permanent, active, stateful, reliable cloud proxies with your web app and gadgets.
 
-See http://www.cafjs.com
+See https://www.cafjs.com
 
-## CAF CA
+## Library for creating CAs
 [![Build Status](https://travis-ci.org/cafjs/caf_ca.svg?branch=master)](https://travis-ci.org/cafjs/caf_ca)
 
-This library provides components to create a CA.
+This library provides components to create a CA (Cloud Assistant).
 
 A CA is an Actor, in the spirit of an Erlang/OTP `gen_server`, with a queue that serializes message processing, a location-independent name, some private state, and the ability to change behavior, or interact with other CAs.
 
@@ -21,14 +21,14 @@ In fact, our favorite load-balancing strategy is to just kill hot processes, and
 
 CA methods are **always** asynchronous methods. They can be implemented using the `async/await` pattern, or using standard callbacks. In the first case we emulate the callback by returning an array with an error/data pair.
 
-When the method returns this array, or invokes the callback as a tail call, the framework knows that the message has been fully processed, and your application is ready for the next one. This enforces message serialization.
+When the method returns this array, or invokes the callback as a tail call, the framework knows that the message has been fully processed, and your application is ready for the next one. This enforces message serialization, even if we `await` while processing a message, eliminating races.
 
-Never throw in a method to propagate an application error. An unhandled exception closes the client session. This makes it easier to find programming errors.
+Never throw in a method to propagate an application error. An unhandled exception closes the client session. Instead, return the error as the first argument of the array (or callback), and the client will process it inline, without closing the session. This strategy makes it easier to find programming errors.
 
 CAs have two sets of methods:
 
 * *internal:* always prefixed by `__ca_` and called by the framework.
-* *external:* called remotely by the client library.
+* *external:* all the others, called remotely by the client library.
 
 ```
 exports.methods = {
@@ -113,7 +113,7 @@ The method `__ca_resume__` is called every time we reload the CA state from a ch
 
 #### Plugins
 
-A CA extends its capabilities with a plugin architecture. CAF.js uses a component model {@link external:caf_components} to describe plugins with a configuration file `ca.json`. See `lib/ca.json` for an example.
+A CA extends its capabilities with a plugin architecture. `Caf.js` uses a component model {@link external:caf_components} to describe plugins with a configuration file `ca.json`. See `lib/ca.json` for an example.
 
 A plugin is exposed to application code with a security proxy (see {@link external:caf_components/gen_proxy}). These proxies are properties of the object `this.$`.
 

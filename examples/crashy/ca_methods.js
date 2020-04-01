@@ -1,10 +1,10 @@
 'use strict';
 
-var caf = require('caf_core');
-var assert = require('assert');
-var util = require('util');
+const caf = require('caf_core');
+const assert = require('assert');
+const util = require('util');
 
-var setTimeoutPromise = util.promisify(setTimeout);
+const setTimeoutPromise = util.promisify(setTimeout);
 
 exports.methods = {
     async __ca_init__() {
@@ -12,7 +12,7 @@ exports.methods = {
         return [];
     },
     async increment(crash) {
-        var oldValue = this.state.counter;
+        const oldValue = this.state.counter;
         this.state.counter = this.state.counter + 1;
         await setTimeoutPromise(1000);
         if (crash === 'Oops') {

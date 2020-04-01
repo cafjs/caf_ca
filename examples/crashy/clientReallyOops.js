@@ -10,23 +10,23 @@
  * operational for other methods.
  */
 
-var caf_core = require('caf_core');
-var caf_comp = caf_core.caf_components;
-var myUtils = caf_comp.myUtils;
-var caf_cli = caf_core.caf_cli;
+const caf_core = require('caf_core');
+const caf_comp = caf_core.caf_components;
+const myUtils = caf_comp.myUtils;
+const caf_cli = caf_core.caf_cli;
 
 /* `from` CA needs to be the same as target `ca` to enable creation, i.e.,
  *  only owners can create CAs.
  *
  *  With security on, we would need a token to authenticate `from`.
 */
-var URL = 'http://root-crashy.vcap.me:3000/#from=foo-ca1&ca=foo-ca1';
+const URL = 'http://root-crashy.vcap.me:3000/#from=foo-ca1&ca=foo-ca1';
 
-var s = new caf_cli.Session(URL);
+const s = new caf_cli.Session(URL);
 
 s.onopen = async function() {
     try {
-        var counter = await s.getCounter().getPromise();
+        let counter = await s.getCounter().getPromise();
         console.log('Initial Count: ' + counter);
         counter = await s.increment('Really Oops').getPromise();
         console.log('BUG: Should NOT print this');
