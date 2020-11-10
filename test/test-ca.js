@@ -55,7 +55,8 @@ module.exports = {
                 "helloDelayException":["msg"],
                 "getLastMessage":[],"getQueueLength":[],
                     "__external_ca_touch__": [],
-                    "__external_ca_multi__": [ 'multiArgs' ]
+                    "__external_ca_multi__": [ 'multiArgs' ],
+                    "__external_ca_destroy__": [ 'data' ]
                    };
 
         test.equal(typeof(self.$.top1.$.ca), 'object',
