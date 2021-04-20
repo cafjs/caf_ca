@@ -88,7 +88,10 @@
                     "env" : {
                         "maxRetries" : "$._.env.maxRetries",
                         "retryDelay" : "$._.env.retryDelay",
-                        "backchannelTimeout" : 8000
+                        "backchannelTimeout" : 8000,
+                        "maxSessions" : 5,
+                        "maxMessages" : 10
+
                     },
                     "components" : [
                         {
