@@ -5,7 +5,9 @@ Co-design cloud assistants with your web app and IoT devices.
 See https://www.cafjs.com
 
 ## Library for creating CAs
-[![Build Status](https://travis-ci.org/cafjs/caf_ca.svg?branch=master)](https://travis-ci.org/cafjs/caf_ca)
+
+
+[![Build Status](https://github.com/cafjs/caf_ca/actions/workflows/push.yml/badge.svg)](https://github.com/cafjs/caf_ca/actions/workflows/push.yml)
 
 This library provides components to create a CA (Cloud Assistant).
 
