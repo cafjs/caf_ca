@@ -47,13 +47,16 @@ module.exports = {
     },
 
     helloworld : function (test) {
-        test.expect(26);
+        test.expect(29);
         var self = this;
         var ca1;
         var meta = {"hello":["msg"],"helloFail":["msg"],
                 "helloException":["msg"],
                 "helloDelayException":["msg"],
-                "getLastMessage":[],"getQueueLength":[],
+                    "getLastMessage":[],"getQueueLength":[],
+                    "delayMethod": ['value'],
+                    "delayMethodImpl": ['value'],
+                    "getLastValue": [],
                     "__external_ca_touch__": [],
                     "__external_ca_multi__": [ 'multiArgs' ],
                     "__external_ca_destroy__": [ 'data' ]
@@ -215,6 +218,33 @@ module.exports = {
                 var msg = json_rpc
                         .systemRequest('ca',
                                        'getQueueLength');
+
+                self.$.top1.$.ca.__ca_process__(msg, cb1);
+            },
+            // delay method
+            function(cb) {
+                 const cb1 = function(err, data) {
+                    test.ifError(err);
+                    cb(null);
+                };
+                const msg = json_rpc.systemRequest('ca', 'delayMethod',
+                                                   'myvalue');
+                self.$.top1.$.ca.__ca_process__(msg, cb1);
+            },
+            function(cb) {
+                setTimeout(() => cb(null), 1000);
+            },
+            function(cb) {
+                const cb1 = function(err, data) {
+                    test.ifError(err);
+                    var resp =
+                            json_rpc
+                            .getAppReplyData(data);
+                    console.log(JSON.stringify(resp));
+                    test.equals(resp, 'myvalue');
+                    cb(null);
+                };
+                const msg = json_rpc.systemRequest('ca', 'getLastValue');
 
                 self.$.top1.$.ca.__ca_process__(msg, cb1);
             },

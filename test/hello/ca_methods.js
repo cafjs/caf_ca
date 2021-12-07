@@ -48,5 +48,16 @@ exports.methods = {
     },
     getQueueLength: function(cb) {
         cb(null, this.$.inq.queueLength());
+    },
+    delayMethod: function(value, cb) {
+        this.$.inq.delayMethod('delayMethodImpl', [value], 900);
+        cb(null);
+    },
+    delayMethodImpl: function(value, cb) {
+        this.state.lastValue = value;
+        cb(null);
+    },
+    getLastValue: function(cb) {
+        cb(null, this.state.lastValue);
     }
 };
