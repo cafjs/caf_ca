@@ -133,6 +133,25 @@
             ]
         },
         {
+            "module": "caf_fsm#plug_ca",
+            "name": "fsm",
+            "description": "Manages a FSM for this CA.",
+            "env" : {
+                "maxRetries" : "$._.env.maxRetries",
+                "retryDelay" : "$._.env.retryDelay"
+            },
+            "components" : [
+                {
+                    "module": "caf_fsm#proxy",
+                    "name": "proxy",
+                    "description": "Provides a FSM API.",
+                    "env" : {
+
+                    }
+                }
+            ]
+        },
+        {
             "module": "./plug_ca_inqueue",
             "name": "inq",
             "description": "Manages a shared queue for incoming requests",
