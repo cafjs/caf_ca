@@ -112,6 +112,24 @@
             ]
         },
         {
+            "module": "caf_delay#plug_ca",
+            "name": "delay",
+            "description": "Implements a method delay service for a CA",
+            "env" : {
+                "maxRetries" : "$._.env.maxRetries",
+                "retryDelay" : "$._.env.retryDelay"
+            },
+            "components" : [
+                {
+                    "module": "caf_delay#proxy",
+                    "name": "proxy",
+                    "description": "Allows access to a delay method service",
+                    "env" : {
+                    }
+                }
+            ]
+        },
+        {
             "module": "caf_session#plug_ca",
             "name": "session",
             "description": "Manages sessions with clients\n Properties:\n <backchannelTimeout> Max seconds to reset the backchannel.\n",
