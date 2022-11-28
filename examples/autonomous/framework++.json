@@ -3,7 +3,7 @@
     "env" : {
         "appPublisher" :"root",
         "appLocalName" : "autonomous",
-        "appSuffix" : "vcap.me",
+        "appSuffix" : "localtest.me",
         "interval" : 2000
     },
     "components": [

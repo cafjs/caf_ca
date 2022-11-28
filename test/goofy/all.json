@@ -29,16 +29,16 @@
             "description" : "redisPlug",
             "env" : {
                 "appName" : "goofy-goofy",
-               "nodeId": "sasdasd.vcap.me:4000",
+               "nodeId": "sasdasd.localtest.me:4000",
                "paas" : "redis",
                 "localNodeId" : "localhost:3000",
                 "availableNodeIds": [
-                    "sasdasd.vcap.me:4000",
-                    "sasdasd.vcap.me:4001",
-                    "sasdasd.vcap.me:4002",
-                    "sasdasd.vcap.me:4003",
-                    "sasdasd.vcap.me:4004",
-                    "sasdasd.vcap.me:4005"
+                    "sasdasd.localtest.me:4000",
+                    "sasdasd.localtest.me:4001",
+                    "sasdasd.localtest.me:4002",
+                    "sasdasd.localtest.me:4003",
+                    "sasdasd.localtest.me:4004",
+                    "sasdasd.localtest.me:4005"
                 ],
                "redis" : {
                    "password" : null,
